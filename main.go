@@ -148,7 +148,7 @@ func main() {
 	flag.Parse()
 
 	if *url == "" {
-		fmt.Println("Usage: go run main.go --url=https://github.com/lamoboos223/keycloak-dummy-otp-extension")
+		fmt.Println("Usage: ./Keycloak-extension-cli --url=https://github.com/lamoboos223/keycloak-dummy-otp-extension")
 		log.Fatal()
 	}
 
