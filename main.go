@@ -15,7 +15,7 @@ import (
 // Git clone function
 func gitClone(repoURL, destination string, done chan<- error) {
 	cmd := exec.Command("git", "clone", repoURL, destination)
-	cmd.Stdout = os.Stdout
+	// cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
 	err := cmd.Run()
@@ -177,6 +177,12 @@ func main() {
 	// Build the extension
 	go buildExtension(TMP_PATH, done)
 
+	// Create a channel to receive the packaging type
+	packagingDone := make(chan string)
+	go getPackageType(TMP_PATH, packagingDone)
+	packaging := <-packagingDone
+	pattern := "*." + packaging
+
 	// Wait for build to complete
 	if err := <-done; err != nil {
 		fmt.Println("[ERROR] building extension:", err)
@@ -184,12 +190,6 @@ func main() {
 	}
 
 	fmt.Println("[INFO] Extension built successfully")
-
-	// Create a channel to receive the packaging type
-	packagingDone := make(chan string)
-	go getPackageType(TMP_PATH, packagingDone)
-	packaging := <-packagingDone
-	pattern := "*." + packaging
 
 	err := os.Chdir(filepath.Join(TMP_PATH, "target"))
 	if err != nil {
@@ -216,20 +216,20 @@ func main() {
 	fmt.Println("[INFO] File copied successfully")
 
 	// Rebuild Keycloak instance
-	// go rebuildKeycloakInstance(done)
-	// if err := <-done; err != nil {
-	// 	fmt.Println("[ERROR] rebuilding Keycloak instance:", err)
-	// 	return
-	// }
+	go rebuildKeycloakInstance(done)
+	if err := <-done; err != nil {
+		fmt.Println("[ERROR] rebuilding Keycloak instance:", err)
+		return
+	}
 
 	fmt.Println("[INFO] Keycloak instance rebuilt")
 
 	// Restart Keycloak service
-	// go restartKeycloak(done)
-	// if err := <-done; err != nil {
-	// 	fmt.Println("[ERROR] restarting Keycloak service:", err)
-	// 	return
-	// }
+	go restartKeycloak(done)
+	if err := <-done; err != nil {
+		fmt.Println("[ERROR] restarting Keycloak service:", err)
+		return
+	}
 
 	fmt.Println("[INFO] Keycloak service restarted")
 }
