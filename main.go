@@ -149,7 +149,7 @@ func restartKeycloak(done chan<- error) {
 
 func main() {
 
-	TMP_PATH := "/Users/lama/development/go-projects/keycloak-clitool/tmp/code"
+	TMP_PATH := "/tmp/code"
 	url := flag.String("url", "", "Github url of the extension")
 	flag.Parse()
 
