@@ -18,7 +18,7 @@ export KEYCLOAK_PATH=/path/to/keycloak-server
 ### Execute the installation of an extension
 
 ```sh
-./Keycloak-extension-cli --url=https://github.com/lamoboos223/keycloak-dummy-otp-extension
+./Keycloak-extension-cli install --url=https://github.com/lamoboos223/keycloak-dummy-otp-extension
 ```
 
 
