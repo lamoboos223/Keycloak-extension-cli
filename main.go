@@ -329,6 +329,25 @@ func main() {
 		}
 		uninstallExtension(*file)
 		fmt.Printf("Uninstalling extension %s\n", *file)
+		// Rebuild Keycloak instance
+		// Create a channel for error handling
+		done := make(chan error)
+		go rebuildKeycloakInstance(done)
+		if err := <-done; err != nil {
+			fmt.Println("[ERROR] rebuilding Keycloak instance:", err)
+			return
+		}
+
+		fmt.Println("[INFO] Keycloak instance rebuilt")
+
+		// Restart Keycloak service
+		go restartKeycloak(done)
+		if err := <-done; err != nil {
+			fmt.Println("[ERROR] restarting Keycloak service:", err)
+			return
+		}
+
+		fmt.Println("[INFO] Keycloak service restarted")
 	case "list":
 		if len(os.Args) > 2 && (os.Args[2] == "--help" || os.Args[2] == "-h") {
 			printListUsage()
