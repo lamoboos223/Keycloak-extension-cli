@@ -1,3 +1,4 @@
 dist/
 tmp/
-providers/
+keycloak-server/*
+.DS_Store
